@@ -64,6 +64,7 @@ struct HomeView: View {
                             .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                         }
                     }
+                    .buttonStyle(.plain) // Fixes rectangular click highlights/artifacts
                     .padding(.horizontal, 40)
                     .padding(.bottom, 60)
                 }
