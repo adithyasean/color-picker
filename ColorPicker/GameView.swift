@@ -5,21 +5,18 @@ struct GameView: View {
     @State private var cards: [Card] = []
     @State private var firstSelectedIndex: Int?
     @State private var score = 0
+    @State private var moves = 0
     @State private var matchedPairs = 0
     @State private var showGameOver = false
     @State private var playerName = ""
-    
-    // Haptics - using UIKit generators instead
+    @State private var showExitConfirmation = false
+    @State private var showRestartConfirmation = false
     
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-    
-    init() {
-        _cards = State(initialValue: Self.createDeck())
-    }
     
     var body: some View {
         ZStack {
@@ -29,14 +26,28 @@ struct GameView: View {
             
             VStack(spacing: 30) {
                 // Header & Score
-                VStack(spacing: 10) {
-                    Text("Score: \(score)")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
-                        .background(.ultraThinMaterial, in: Capsule())
+                HStack(spacing: 40) {
+                    VStack(spacing: 5) {
+                        Text("Score")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.8))
+                        Text("\(score)")
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                    }
+                    
+                    VStack(spacing: 5) {
+                        Text("Moves")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.8))
+                        Text("\(moves)")
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                    }
                 }
+                .padding(.horizontal, 30)
+                .padding(.vertical, 12)
+                .background(.ultraThinMaterial, in: Capsule())
                 .padding(.top)
                 
                 // Game Grid
@@ -60,12 +71,45 @@ struct GameView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button {
-                    dismiss()
+                    // Confirm exit if game has progress
+                    if moves > 0 && matchedPairs < 4 {
+                        showExitConfirmation = true
+                    } else {
+                        dismiss()
+                    }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
                         .foregroundStyle(.white.opacity(0.8))
                 }
             }
+            
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    // Confirm restart if game has progress
+                    if moves > 0 && matchedPairs < 4 {
+                        showRestartConfirmation = true
+                    } else {
+                        restartGame()
+                    }
+                } label: {
+                    Image(systemName: "arrow.counterclockwise.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+            }
+        }
+        .alert("End Game?", isPresented: $showExitConfirmation) {
+            Button("End Game", role: .destructive) { dismiss() }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Current progress will be lost.")
+        }
+        .alert("Restart Game?", isPresented: $showRestartConfirmation) {
+            Button("Restart", role: .destructive) { restartGame() }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Current progress will be lost.")
         }
         .alert("Game Over!", isPresented: $showGameOver) {
             TextField("Your Name", text: $playerName)
@@ -80,7 +124,12 @@ struct GameView: View {
                 dismiss()
             }
         } message: {
-            Text("Final Score: \(score)\nEnter your name to save.")
+            Text("Final Score: \(score)\nMoves: \(moves)\nEnter your name to save.")
+        }
+        .onAppear {
+            if cards.isEmpty {
+                cards = GameView.createDeck()
+            }
         }
     }
     
@@ -111,6 +160,7 @@ struct GameView: View {
             cards[index2].isMatched = true
             score += 2
             matchedPairs += 1
+            moves += 1
             
             // Success Haptic
             #if os(iOS)
@@ -125,6 +175,7 @@ struct GameView: View {
         } else {
             // Mismatch
             if score > 0 { score -= 1 }
+            moves += 1
             
             // Failure Haptic
             #if os(iOS)
@@ -166,6 +217,7 @@ struct GameView: View {
         cards = Self.createDeck()
         firstSelectedIndex = nil
         score = 0
+        moves = 0
         matchedPairs = 0
         playerName = ""
     }
