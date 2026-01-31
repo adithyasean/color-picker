@@ -844,7 +844,7 @@ struct GameView: View {
         }
         
         if result.maxCombo > 1 {
-            message += "Max Combo: \(result.maxCombo, specifier: "%.1f")x\n"
+            message += "Max Combo: \(String(format: "%.1f", result.maxCombo))x\n"
         }
         
         if result.mistakes == 0 {

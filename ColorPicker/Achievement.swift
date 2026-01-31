@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Combine
 
 /// Achievement definition
 struct Achievement: Identifiable, Codable, Equatable {

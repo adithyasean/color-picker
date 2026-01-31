@@ -130,7 +130,7 @@ struct GameModeCard: View {
                     StatBadge(icon: "clock", text: "No Limit")
                 }
                 
-                StatBadge(icon: "star.fill", text: "\(mode.scoreMultiplier, specifier: "%.1f")x")
+                StatBadge(icon: "star.fill", text: "\(String(format: "%.1f", mode.scoreMultiplier))x")
             }
         }
         .padding(16)
