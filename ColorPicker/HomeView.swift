@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var animateGradient = false
+    @StateObject private var achievementManager = AchievementManager.shared
     
     var body: some View {
         NavigationStack {
@@ -36,8 +37,9 @@ struct HomeView: View {
                     Spacer()
                     
                     // Buttons
-                    VStack(spacing: 20) {
-                        NavigationLink(destination: GameView()) {
+                    VStack(spacing: 16) {
+                        // Play Game - Primary Button
+                        NavigationLink(destination: GameModeSelectionView()) {
                             HStack {
                                 Image(systemName: "play.fill")
                                 Text("Play Game")
@@ -50,21 +52,65 @@ struct HomeView: View {
                             .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
                         }
                         
-                        NavigationLink(destination: HighScoresView()) {
+                        // Quick Play (Classic Mode)
+                        NavigationLink(destination: GameView(gameMode: .classic3x3)) {
                             HStack {
-                                Image(systemName: "trophy.fill")
-                                Text("High Scores")
+                                Image(systemName: "bolt.fill")
+                                Text("Quick Play")
                             }
-                            .font(.title3.bold())
+                            .font(.headline)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 18)
+                            .padding(.vertical, 14)
                             .background(.ultraThinMaterial, in: Capsule())
                             .overlay(Capsule().stroke(.white.opacity(0.3), lineWidth: 1))
                             .foregroundStyle(.white)
-                            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                            .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
                         }
+                        
+                        HStack(spacing: 12) {
+                            // High Scores
+                            NavigationLink(destination: HighScoresView()) {
+                                HStack {
+                                    Image(systemName: "trophy.fill")
+                                    Text("Scores")
+                                }
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(.ultraThinMaterial, in: Capsule())
+                                .overlay(Capsule().stroke(.white.opacity(0.3), lineWidth: 1))
+                                .foregroundStyle(.white)
+                                .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+                            }
+                            
+                            // Achievements
+                            NavigationLink(destination: AchievementsView()) {
+                                HStack {
+                                    Image(systemName: "medal.fill")
+                                    Text("Achievements")
+                                }
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(.ultraThinMaterial, in: Capsule())
+                                .overlay(Capsule().stroke(.white.opacity(0.3), lineWidth: 1))
+                                .foregroundStyle(.white)
+                                .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+                            }
+                        }
+                        
+                        // Achievement progress indicator
+                        HStack(spacing: 6) {
+                            Image(systemName: "star.fill")
+                                .font(.caption)
+                                .foregroundStyle(.yellow)
+                            Text("\(achievementManager.unlockedCount)/\(achievementManager.totalCount) Achievements")
+                                .font(.caption)
+                                .foregroundStyle(.white.opacity(0.7))
+                        }
+                        .padding(.top, 8)
                     }
-                    .buttonStyle(.plain) // Fixes rectangular click highlights/artifacts
+                    .buttonStyle(.plain)
                     .padding(.horizontal, 40)
                     .padding(.bottom, 60)
                 }

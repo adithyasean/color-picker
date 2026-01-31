@@ -5,4 +5,5 @@ struct Card: Identifiable {
     let color: Color
     var isFaceUp = false
     var isMatched = false
+    var isDecoy = false  // Decoy cards can't be matched
 }
